@@ -1,0 +1,138 @@
+PUNTO DELLA SITUAZIONE 27/12/2020
+-Il programma creato mettendo la t/raccia puppeteer in un modulo esterno ha funzionato una volta ma l'errore più comune
+è che si ferma su una delle ultime waitForSelector come non trovasse l'elemento su cui fare le operazioni.
+-provare a fixare questa cosa (anche se non capisco perchè si comporti così), provando ad eseguire la traccia anche con
+il vecchio progetto per vedere se il problema è il modo in cui è stato modificato il progetto o ci sono altri problemi
+-nel caso in cui non vada a buon fine questo tentativo provare a partire dal vecchio progetto portando fuori soltanto
+la traccia, leggendola riga per riga e passare le varie righe alla funzione eval per l'esecuzione
+-far sì che la traccia (se funziona il modulo) venga messa all'interno di un blocco try catch per la gestione di eventuali
+errori
+
+PUNTO DELLA SITUAZIONE 27/12/2020
+-i test con la traccia come modulo non hanno dato i risultati sperati, nel sito della Mondadori nessun test ha dato esito 
+positivo, il problema si ha con l'istruzione await page.waitForSelector('.info-data-product:nth-child(1) > .product-info > .product-info-wrapper > .title > .link')
+che sembra non trovare l'elemento selezionato (ispezionando la pagina l'elemento esiste e porta all'elemento voluto)
+-provare a portare fuori solo la traccia registrata con headless recorder come file js, leggerla riga per riga passandole
+alla funzione eval per eseguirla
+-AGGIORNAMENTO DELLE 1.30: chiudendo l'istanza di Google Chrome che avevo aperta il programma funziona (domani provare con traccie
+diverse e su siti diversi). Nel caso i test diano esito positivo sistemare questo sistema oltre a salvare i cookies anche salvando la 
+risposta dopo l'ultima operazione effettuata
+-cosa che non capisco: se non setto alcun timeout per la waitForNavigation se ho istanze di Google Chrome aperte non funziona e va in timeout
+dopo 30 secondi (di default viene settato così), se lo imposto a 120 secondi allora funziona ugualmente, non capisco perchè visto che cronometrando
+il programma termina prima di 30 secondi.
+
+-compiti per domani: testare lo script su diversi siti presi dalla tesi di Sofia per fare le operazioni che ha provato pure lei e 
+se è tutto apposto implementare il fatto di salvare la risposta dopo aver compiuto l'operazione che si voleva compiere
+
+PUNTO DELLA SITUAZIONE 28/12/2020
+-provata come traccia l'aggiunta di un post su reddit, ci sono problemi risultanti dall'utilizzo di headless recorder, alcune operazioni
+non le rileva e per cui l'utente è costretto ad intervenire a mano per eseguire i passi mancanti
+-credo che i passi mancanti siano dovuti al fatto di non premere correttamente sopra un certo elemento (dovuto a come è stata creata la pagina)
+per via del loro posizionamento sbagliato e headless recorder non rileva l'operazione
+-questo provoca errori all'implementazione tramite modulo esterno perchè non si può intervenire a mano per via dell'implementazione (stesso problema 
+si ha anche con lo script fatto da Sofia)
+
+PUNTO DELLA SITUAZIONE 29/12/2020
+-await puppeteer.launch({headless: false}), aggiunto headless:false per far sì che venga aperta un'istanza di chromium e venga visualizzato ciò che lo script
+esegue
+-problemi con la risposta, le richieste riesco a salvarle in un oggetto invece con le risposte non riesco a capire perchè non vengano salvate
+
+PUNTO DELLA SITUAZIONE 30/12/2020
+-nessun particolare miglioramento apportato, eseguiti solo test per capire come andare a gestire le risposte che arrivano e in particolare la risposta
+(con relativo status-code) che arriva dopo l'operazione critica
+
+PUNTO DELLA SITUAZIONE 31/12/2020
+\
+
+PUNTO DELLA SITUAZIONE 1/01/2021
+\
+
+PUNTO DELLA SITUAZIONE 2/01/2021
+\
+
+PUNTO DELLA SITUAZIONE 3/01/2021
+-nessun passo avanti sul fronte della risposta
+
+PUNTO DELLA SITUAZIONE 4/01/2021
+-sono riuscito finalmente ad implementare un funzione che vada a filtrare solo le risposte che mi interessino, prossimo passo è capire 2 cose:
+    ->come usare la cosa a nostro favore (sempre che si possa usare a nostro favore ma presumo di sì perchè ci aiuta a togliere alcune risposte
+    che con il sito che stiamo testando non centrano nulla)
+    ->perchè ogni volta che questo script viene eseguito il numero sia delle risposte totali sia delle risposte inerenti al sito cambia sempre, 
+    provare ad eseguire lo script rallentandolo opportunamente ogni volta che viene eseguita un'operazione per permettere il carimento di tutti
+    gli elementi della pagina e provare a vedere se il numero di risposte è omogeneo
+
+PUNTO DELLA SITUAZIONE 5/01/2021
+-ieri sera lo stesso script stampava tutte le risposte compresa quella di nostro interesse, oggi su almeno 10 prove non l'ha mai stampata.
+All'ultimo tentativo effettuato prima di spegnere l'ha stampata
+
+-NB: forse il problema sorge dal fatto che le operazioni che compie lo script (mi riferisco alle ultime) le esegue e subito dopo chiude il browser,
+di conseguenza tutte le risposte che dovevano ancora arrivare al client vengono perse, inserendo la slowMo nel metodo launch in 3 volte è sempre 
+ritornata la risposta desiderata
+
+-domani provare a cambiare lo script per il test, eventualmente cambiando libro e azione oppure cambiando direttamente sito
+
+PUNTO DELLA SITUAZIONE 6/01/2021
+-idea venuta stamattinma: provare a mettere delle nop prima della chiusura del browser per far sì che tutte le risposte che devono arrivare arrivino
+e possano essere salvate
+-oppure provare a ragionare non più nell'ambito delle risposte ma nell'ambito delle richieste le quali hanno collegate delle risposte
+-nessun passo avanti, la traccia sul sito della mondadori sembra funzionare come dovrebbe 
+-domani va perfezionato il sistema di filtraggio delle risposte per vedere se si riesce a vedere la struttura di una risposta
+
+PUNTO DELLA SITUAZIONE 7/01/2021
+\
+
+PUNTO DELLA SITUAZIONE 8/01/2021
+\
+
+PUNTO DELLA SITUAZIONE 9/01/2021
+-iniziato script per vedere se le richieste vengono sempre fatte nello stesso ordine, incrociare i dati con le risposte per capire in che 
+ordine viene fatto il tutto nei prossimi giorni, fare il test su altri siti
+
+PUNTO DELLA SITUAZIONE 10/01/2021
+-le risposte non arrivano nello stesso ordine con cui le rischieste vengono fatte ma arrivano in ordine diverso
+-la strada che secondo me è la soluzione più semplice è controllare l'ordine di ricezione delle risposte e in tal caso salvare in un oggetto
+la coppia (url richiesta/risposta;status code risposta) e controllare l'ordine degli status code per richiesta/risposta
+-salvarsi solo l'url delle risposte con lo status code (se sono sempre uguali in numero filtrandole anche negli altri siti) e poi mettre in ordine
+le risposte ottenute (se non sono ordinate) e confrontare l'ordine degli status code
+
+PUNTO DELLA SITUAZIONE 11/01/2021
+-ho filtrato ulteriormente richieste e risposte togliendo tutte quelle che vanno verso immagini e quant'altro
+-domani fare test su altri siti per vedere le richieste e il loro tipo su operazioni critiche trovate da Sofia così da poter avere
+dei riscontri effettivi e poter trovare un sistema corretto per automatizzare il test
+
+PUNTO DELLA SITUAZIONE 12/01/2021
+-provando a capire quali richieste e relative risposte sono parte della vulnerabilità
+
+PUNTO DELLA SITUAZIONE 13/01/2021
+-trovata idea finale, tenere le richieste nella loro interezza nell'array delle richieste opportunamente filtrate e poi sfruttarle
+per tirare fuori un array con gli status code in ordine di richiesta (provare che le richieste vengano sempre fatte nello stesso ordine)
+-in caso positivo allora l'idea è attuabile e si può testare con altri siti
+
+PUNTO DELLA SITUAZIONE 14/01/2021
+\
+
+PUNTO DELLA SITUAZIONE 15/01/2021
+-da continuare il test sull'ordine delle risposte
+
+PUNTO DELLA SITUAZIONE 16/01/2021
+-reddit da molti porblemi durante il test, la traccia non viene eseguita (tranne qualche rarissima volta)
+
+PUNTO DELLA SITUAZIONE 17/01/2021
+\
+
+PUNTO DELLA SITUAZIONE 18/01/2021
+-individuati problemi importanti:
+    1)credenziali non possibile riceverle come input
+    2)esecuzione sequenziale delle 2 particolare
+
+PUNTO DELLA SITUAZIONE 19/01/2021
+-passi avanti cambiamento da senza a con websocket in modo tale da avere la possibilità di poter
+cambiare account durante un'attesa posta tra la fine della parte della vittima e l'inizio di 
+quella dell'attaccante
+
+PUNTO DELLA SITUAZIONE 20/01/2021
+-risolto il problema della sleep, ora devo adattare la funzione navigateStriker per far sì che faccia il suo dovere
+-una volta fatto questo rendere il codice il più modulare possibili creando funzioni che racchiudano le varie funzionalità
+del programma
+
+PUNTO DELLA SITUAZIONE 21/01/2021

@@ -1,0 +1,32 @@
+PUNTO 1
+-mioglioramenti all'usabilità:
+	->unificare le 2 parti
+	->renderlo più user-friendly (ad esempio traccia inserita in un file che viene poi letto dallo script, )
+	->confrontare le risposte ricevute per automatizzare il controllo del risultato del test
+	->
+
+PUNTO 2
+-interessante, si può anche lavorare in un refactoring del codice per renderlo un programma
+unico e più user-friendly
+
+
+
+DA FARE
+1)automatizzare bene il codice e quello che ha scritto sofia
+2)integrare con altri 2 attacchi (OPZIONALE)
+
+
+
+PUNTI IN CUI PROCEDERE
+1)Unificare il codice 
+2)Prendere in input le credenziali dei 2 account (process.argv[<da 2 in poi è valido>])
+3)Controllare la risposta della traccia prima dell'attacco e dopo (controllare lo status code) => HTTPresponse class
+
+TENERE MODULARI IL CONTROLLO FINALE E LE OPERAZIONI INTERMEDIE
+
+PER QUANTO RIGUARDA IL FILE ESTERNO DOVE METTERE LA TRACCIA PUPPETEER USARE LA FUNZIONE EVAL PER LEGGERE UNA RIGA 
+DAL FILE ESTERNO ED ESEGUIRLA COME CODICE JAVASCRIPT
+
+
+note pt. 2: non è possibile fare in questo modo in quanto i parametri andrebbero inseriti nella traccia (bisogna verificare che
+gli attributi a cui si fa riferimento siano diversi)
