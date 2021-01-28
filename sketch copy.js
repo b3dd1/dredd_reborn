@@ -14,7 +14,7 @@ const expression = /^(http)(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(
 //For choose the type of attack
 attackType = ['Related-domain session hijacking', 'Network session hijacking without HSTS', 'Related-domain session fixation', 'Network session fixation without HSTS'];
 //For connect the script to an existing instance of Chrome
-const webSocketDebuggerUrl = readline.question('Insert the webSocketDebuggerUrl value: ');
+const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/2fd8a59b-274c-4328-9996-f4178be4bf87';//readline.question('Insert the webSocketDebuggerUrl value: ');
 
 
 module.exports = {
@@ -37,7 +37,7 @@ module.exports = {
           //eventhalndler for testing the order of questions and reply
         page.on('request', async function(request) {
         const url = request.url();
-        if (url.indexOf(urlDomain) == 0 && request.resourceType() != "image" && request.resourceType() != "media" && request.resourceType() != "font") {
+        if (url.indexOf(urlDomain) == 0 && request.resourceType() != "image" && request.resourceType() != "media" && request.resourceType() != "font" && request.resourceType() != "stylesheet") {
             requests[contReq] =  "request url: " + url + " type: " + request.resourceType();
             contReq = contReq + 1;
             console.log(request.frame());
