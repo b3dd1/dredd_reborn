@@ -1,7 +1,7 @@
 [
   {
     "name": "JSESSIONID",
-    "value": "DDF6C0959A32B8717E6D0719CEA66E5B",
+    "value": "6919580CA9939FB2B83181CBCD8ACDC6",
     "domain": "www.mondadoristore.it",
     "path": "/",
     "expires": -1,
@@ -12,7 +12,7 @@
   },
   {
     "name": "HAPSIDMONDSTORE",
-    "value": "tombol44",
+    "value": "tombol41",
     "domain": "www.mondadoristore.it",
     "path": "/",
     "expires": -1,
@@ -22,12 +22,34 @@
     "session": true
   },
   {
+    "name": "amerg_cookie",
+    "value": "21342868*gino__*743e513928e89b01bb198aff088d2b7a",
+    "domain": ".mondadoristore.it",
+    "path": "/",
+    "expires": -1,
+    "size": 60,
+    "httpOnly": false,
+    "secure": false,
+    "session": true
+  },
+  {
     "name": "hashu",
     "value": "72486aa63025fabcb7edaccab9902e6b688a7ec56f012fb28b0f171b8054b014",
     "domain": "www.mondadoristore.it",
     "path": "/",
-    "expires": 1611849007,
+    "expires": 1613301105,
     "size": 69,
+    "httpOnly": false,
+    "secure": false,
+    "session": false
+  },
+  {
+    "name": "last_search",
+    "value": "mago%20merlino",
+    "domain": "www.mondadoristore.it",
+    "path": "/",
+    "expires": 1613400176,
+    "size": 25,
     "httpOnly": false,
     "secure": false,
     "session": false
@@ -55,22 +77,11 @@
     "session": false
   },
   {
-    "name": "last_search",
-    "value": "mago%20merlino",
-    "domain": "www.mondadoristore.it",
-    "path": "/",
-    "expires": 1612172703,
-    "size": 25,
-    "httpOnly": false,
-    "secure": false,
-    "session": false
-  },
-  {
     "name": "_iub_cs-8108345",
     "value": "%7B%22consent%22%3Atrue%2C%22timestamp%22%3A%222021-01-22T09%3A44%3A49.492Z%22%2C%22version%22%3A%220.11.35.1%22%2C%22id%22%3A8108345%7D",
     "domain": ".mondadoristore.it",
     "path": "/",
-    "expires": 1643228429,
+    "expires": 1644405085,
     "size": 151,
     "httpOnly": false,
     "secure": false,

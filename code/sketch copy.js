@@ -11,10 +11,10 @@ const { info } = require('console');
 //urlDomain = process.argv[2];
 //For the check of the url
 const expression = /^(http)(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$/gm;
-//For choose the type of attack
+//This array contains all the possible type of attack
 attackType = ['Related-domain session hijacking', 'Network session hijacking without HSTS', 'Related-domain session fixation', 'Network session fixation without HSTS'];
 //For connect the script to an existing instance of Chrome
-const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/2fd8a59b-274c-4328-9996-f4178be4bf87';//readline.question('Insert the webSocketDebuggerUrl value: ');
+const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/d97f1794-db2d-4311-aa7d-07b477c6b913';//readline.question('Insert the webSocketDebuggerUrl value: ');
 
 
 module.exports = {
@@ -27,6 +27,7 @@ module.exports = {
         
 
         requests = {};
+        req = {};
         contReq = 0;
 
         if  (!expression.test(urlDomain)) {
@@ -37,14 +38,14 @@ module.exports = {
           //eventhalndler for testing the order of questions and reply
         page.on('request', async function(request) {
         const url = request.url();
-        if (url.indexOf(urlDomain) == 0 && request.resourceType() != "image" && request.resourceType() != "media" && request.resourceType() != "font" && request.resourceType() != "stylesheet") {
+        if (url.indexOf(urlDomain) == 0 && request.frame() === page.mainFrame() && request.resourceType() != "image" && request.resourceType() != "media" && request.resourceType() != "font" && request.resourceType() != "stylesheet") {
             requests[contReq] =  "request url: " + url + " type: " + request.resourceType();
+
             contReq = contReq + 1;
-            console.log(request.frame());
         }
         });
 
-        //RULES FOR CREATE AN ACCOURATE SKETCH USING HEADLESS RECORDER (USE WITH CHROMIUM)
+        //RULES FOR CREATE AN ACCOURATE SKETCH USING HEADLESS RECORDER
         //1)Insert here the headless recorder sscript from the first operation (await page.goto('...'))
         //to the last operation (excluding the line with browser.close()).
         //2)The sketch must start from the login page, insert all the credentials for access to the web-application with the correct account
