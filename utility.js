@@ -26,7 +26,7 @@ module.exports = {
             case 0: //Related-domain session hijacking
                 //CERCARE UN MODO PER PARAMETRIZZARE IL DOMINIO DEI COOKIES
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return cookie.domain.startsWith("mondadori.com") || cookie.domain.startsWith(".mondadori.com");
+                    return cookie.domain.startsWith("mondadori.it") || cookie.domain.startsWith(".mondadori.it");
                 });
                 break;
             case 1: //Network session hijacking without HSTS
@@ -48,10 +48,10 @@ module.exports = {
                 break;
         }
         console.log("Cookies filtering terminated.");
-        filteredCookies.forEach(cookie => {
+        /*filteredCookies.forEach(cookie => {
             console.log(cookie.name);
         });
-        console.log(filteredCookies);
+        console.log(filteredCookies);*/
 
         return filteredCookies;
     },
@@ -63,19 +63,36 @@ module.exports = {
         /*if (choosenIndex < 0 || choosenIndex > 4) {
             throw new Error("Error, bad selection!!");
         }*/
-        console.log("The attack choosen is: " + attackType[choosenIndex] + " index: " + choosenIndex);
+        console.log("The attack choosen is: " + attackType[choosenIndex] + ". Index: " + choosenIndex);
 
         return choosenIndex;
     },
 
     //Function for connecting the script to an existent instance of Google Chrome
-    createInstance: async function(webSocketDebuggerUrl) {
+    createInstance: async function(webSocketDebuggerUrl, urlDomain) {
+        //Creating the browser instance and the page instance
         const browser = await puppeteer.connect({
             browserWSEndpoint: webSocketDebuggerUrl,
             headless: false,
             slowMo: 300
         });
         const page = await browser.newPage();
+
+        //Event handler for every request that starts
+        page.on('request', async function(request) {
+            const url = request.url();
+            if (url.indexOf(urlDomain) == 0 && request.resourceType() != "image" && request.resourceType() != "media" && request.resourceType() != "font" && request.resourceType() != "stylesheet") {
+                requestsCompletes[contReq] =  request;
+                reqMinimize[contReq] = "request url: " + url + " type: " + request.resourceType();
+
+                contReq = contReq + 1;
+            }
+        });
+
+        page.on("load", async function() {
+            content[cont] = page.content();
+            cont++;
+        });
 
         return {"browser": browser, "page": page};
     },
@@ -110,10 +127,5 @@ module.exports = {
         password = readline.question('Password: ', {hideEchoBack: true});
 
         return {"username": username, "password": password};
-    },
-
-    //Function for testing
-    prova: function() {
-        console.log("Questa cosa dovrebbe essere eseguita alla fine");
     }
 }
