@@ -7,27 +7,31 @@ const readline = require('readline-sync');
 
 module.exports = {
     //Function for filter cookies
-    filterCookies: function() {
+    filterCookies: function(attackType) {
+        console.log('Sono dentro la funzione filterCookies');
         //Read cookies from the file canvas-session.json
         console.log('Reading cookies from the previosly generated file canvas-session.');
-        const cookiesString = fs.readFileSync('./canvas-session.json', 'utf8');
+        try {
+            var cookiesString = fs.readFileSync('./canvas-session.json', 'utf8');
+        } catch (err) {
+            console.error(err);
+        }
         const allCookies = JSON.parse(cookiesString);
-        console.log('Sono dentro la funzione filterCookies');
-        //console.log("Vado a stampare allCookies" + allCookies);
+
         var filteredCookies;
 
         //Choose the type of attack
-        choosenIndex = this.chooseAttack();
+        choosenIndex = this.chooseAttack(attackType);
         console.log("L'indice arrivato è: " + choosenIndex);
 
         //Select the set of cookies that the attacker may can have
         console.log("Cookies filtering...");
         switch (choosenIndex) {
             case 0: //Related-domain session hijacking
-                //CERCARE UN MODO PER PARAMETRIZZARE IL DOMINIO DEI COOKIES
+                //TODO CERCARE UN MODO PER PARAMETRIZZARE IL DOMINIO DEI COOKIES
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return cookie.domain.startsWith("mondadori.it") || cookie.domain.startsWith(".mondadori.it");
-                });
+                    return cookie.domain.startsWith("mondadoristore.it") || cookie.domain.startsWith(".mondadoristore.it");
+                }); 
                 break;
             case 1: //Network session hijacking without HSTS
                 filteredCookies = allCookies.filter(function (cookie) {
@@ -36,10 +40,8 @@ module.exports = {
                 break;
             case 2: //Related-domain session fixation
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return !cookie.domain.startsWith("__Host");
+                    return !cookie.domain.startsWith("__Host") /*&& (cookie.domain.startsWith("mondadoristore.it") || cookie.domain.startsWith(".mondadoristore.it"))*/;
                 });
-                console.log("Sono dentro al terzo caso dello switch");
-                console.log(filteredCookies);
                 break;
             case 3: //Network session fixation without HSTS
                 filteredCookies = allCookies.filter(function (cookie) {
@@ -48,21 +50,24 @@ module.exports = {
                 break;
         }
         console.log("Cookies filtering terminated.");
+        //Debug for see which cookies exit from filtering
         /*filteredCookies.forEach(cookie => {
             console.log(cookie.name);
         });
         console.log(filteredCookies);*/
+        try {
+            fs.writeFileSync("cookies-filtered.json", JSON.stringify(filteredCookies, null, 2));
+        } catch (err) {
+            console.error(err);
+        };
 
         return filteredCookies;
     },
 
-    //Function for choose the attack to execute
-    chooseAttack: function() {
+    //Function for choose the attack to execute from the array attackType that contains all the string with the possible
+    //attack that can be done
+    chooseAttack: function(attackType) {
         var choosenIndex = readline.keyInSelect(attackType, "Digit the index of the attack you want to run");
-
-        /*if (choosenIndex < 0 || choosenIndex > 4) {
-            throw new Error("Error, bad selection!!");
-        }*/
         console.log("The attack choosen is: " + attackType[choosenIndex] + ". Index: " + choosenIndex);
 
         return choosenIndex;
@@ -87,11 +92,6 @@ module.exports = {
 
                 contReq = contReq + 1;
             }
-        });
-
-        page.on("load", async function() {
-            content[cont] = page.content();
-            cont++;
         });
 
         return {"browser": browser, "page": page};
@@ -122,6 +122,7 @@ module.exports = {
         await page.click('.price > .right > .info-data-product > .columRightDetail > .add-to-favorites-new')
     },
 
+    //TODO Function for do automatic login for both victim and attacker
     authentication: function() {
         username = readline.question('Username: ', {hideEchoBack: false});
         password = readline.question('Password: ', {hideEchoBack: true});

@@ -3,14 +3,11 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');
-const {
-	request
-} = require('http');
+const {request} = require('http');
 const readline = require('readline-sync');
 const utility = require('./utility');
-const {
-	info
-} = require('console');
+const {info} = require('console');
+const jsdom = require("jsdom");
 
 //For the check of the url
 const expression = /^(http)(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$/gm;
@@ -18,8 +15,12 @@ const expression = /^(http)(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(
 //This array contains all the possible type of attack
 const attackType = ['Related-domain session hijacking', 'Network session hijacking without HSTS', 'Related-domain session fixation', 'Network session fixation without HSTS'];
 
+//TODO Save the value webSocketDebuggerUrl in a sessionStorage and we take it or from a request to the specific url and obtain the .json with the
+//specific value or we ask this string at the begin of test and in this case the user can put this a single time, after that we take it from storage
+//the second method must be thinking about it (but it doesn't make me freak), I can try to resolve this problem with a cookie hidden and saved here
+//with a small time-to-live (for example one/two hours) and with a mechanism of try...catch for relevate if the webSocket is changed prematurely
 //For connect the script to an existing instance of Chrome
-const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/53f48594-fa15-4b7a-b00c-a9868cd8c06a';
+const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/f0fb65a4-a955-4477-bbeb-208970a8c177';
 
 //Two variables for memorize each status-code, one for victim and one for attacker
 var victimStatus;
@@ -28,6 +29,9 @@ var attackerStatus;
 //Variables for memorize alla the page information about victim and attacker last page
 var pageVictim;
 var pageAttacker;
+
+//Variables for memorize the dom-tree for both victim and attacker
+
 
 module.exports = {
 	//Function for simulate the behaviour of victim
@@ -53,8 +57,6 @@ module.exports = {
 		//For memorize the requests
 		requestsCompletes = [];
 		reqMinimize = [];
-		content = [];
-		cont = 0;
 		contReq = 0;
 
 		//RULES FOR CREATE AN ACCOURATE SKETCH USING HEADLESS RECORDER
@@ -100,13 +102,20 @@ module.exports = {
 
 		//DO NOT DELETE THE FOLLOWING INSTRUCTION!!!
 		//IF YOU DO IT THE PROGRAM WILL HAVE A WRONG BEHAVIOUR!!!
+		//Saving the cookies about the site (1-st party cookies)
 		const cookies = await page.cookies();
 
+		//Try to print and save all the cookies saved
+		//console.log(await page._client.send('Network.getAllCookies'));
+		//const allCookiesInvolvedInteraction = await page._client.send('Network.getAllCookies');
+
+		//Debug
 		console.log("STAMPO L'URL DELLA PAGINA: " + page.url());
 
 		//Save the html code of the last page that it's used inside analysis function for extract the dom-tree
+		console.debug("STO SALVANDO L'HTML DELLA PAGINA DELLA VITTIMA");
 		pageVictim = await page.content();
-		console.log(pageContent.length);
+		console.log(pageVictim.length);
 
 		//This method introduce so much errors saving html code about the last page
 		//const data = await page.evaluate(() => document.querySelector('*').outerHTML);
@@ -118,9 +127,10 @@ module.exports = {
 		//Write file for save cookies (canvas-session.json), save the html of the page (pageVictim.html)
 		//and debugging (request.json)
 		try {
-			fs.writeFileSync('pageVictim.xhtml', pageVictim);
+			fs.writeFileSync('pageVictim.html', pageVictim);
 			fs.writeFileSync('request.json', JSON.stringify(reqMinimize, null, 2));
 			fs.writeFileSync('canvas-session.json', JSON.stringify(cookies, null, 2));
+			//fs.writeFileSync('allCookiesInvolved.json', JSON.stringify(allCookiesInvolvedInteraction, null, 2));
 		} catch (err) {
 			console.error(err);
 		};
@@ -150,7 +160,7 @@ module.exports = {
 		contReq = 0;
 
 		//Filter the cookies and set them in the page
-		var newCookies = utility.filterCookies();
+		var newCookies = utility.filterCookies(attackType);
 		console.log('Setting cookies in the new page.');
 		for (i = 0; i < newCookies.length; i++) {
 			await page.setCookie(newCookies[i]);
@@ -198,8 +208,10 @@ module.exports = {
 		//DO NOT DELETE THE FOLLOWING INSTRUCTION!!!
 		//IF YOU DO IT THE PROGRAM WILL HAVE A WRONG BEHAVIOUR!!!
 
+		//Save the html code of the last page that it's used inside analysis function for extract the dom-tree
+		console.debug("STO SALVANDO L'HTML DELLA PAGINA DELL'ATTACCANTE");
 		pageAttacker = await page.content();
-		console.log(pageContent.length);
+		console.log(pageAttacker.length);
 
 		try {
 			fs.writeFileSync("pageAttacker.html", pageAttacker);
@@ -248,8 +260,68 @@ module.exports = {
 		} else {
 			//Equal status-code, analize html code of attacker and victim page, if the dom-tree is equal the site
 			//is subject to the attack proved, otherwise the attack can't be done
-			console.log(pageVictim.length);
-			console.log(pageAttacker.length);
+			
+			console.log("RICEVUTI DUE STATUS CODE UGUALI");
+
+			//This two actions are necessary for delete useless tabulations and blank spaces for have all the html in one line
+			pageVictimOneLine = pageVictim.replace(/(\r\n|\n+|\r|\t+|\s\s+)/gm, "");
+			pageAttackerOneLine = pageAttacker.replace(/(\r\n|\n+|\r|\t+|\s\s+)/gm, "");
+			console.log("RIMOSSI SPAZIE E TEBULAZIONI");
+
+			//Parse the html for make it a dom
+			var domVictim = new jsdom.JSDOM(pageVictim);
+			var domAttacker = new jsdom.JSDOM(pageAttacker);
+			console.log("CREATA L'ISTANZA DI DOCUMENT, PROVO A CREARE IL DOM-TREE...");
+
+			//Get the html node from the code about the last page
+			rootNodeVictim = domVictim.window.document.documentElement;
+			rootNodeAttacker = domAttacker.window.document.documentElement;
+
+			//Function for extract the dom tree
+			var domTree = function(nodeHtml) {
+				if (nodeHtml.hasChildNodes()) {
+					var child = [];
+					for (var i = 0; i < nodeHtml.childNodes.length; i++) {
+						child.push(domTree(nodeHtml.childNodes[i]));
+					}
+			
+					return {
+						nodeName: nodeHtml.nodeName,
+						parentName: nodeHtml.parentNode.nodeName,
+						child: child
+					};
+				}
+			
+				return {
+					nodeName: nodeHtml.nodeName,
+					parentName: nodeHtml.parentNode.nodeName
+				};
+			};
+
+			//Get the dom tree from the HTML in one line to avoid to have inside the tree too much text node referred to
+			//spaces and tabulations
+			domTreeVictim = domTree(rootNodeVictim);
+			domTreeAttacker = domTree(rootNodeAttacker);
+			
+			//Print the file that contains two dom trees and two HTML in one line
+			console.log("DOM-TREE CREATO, LO STAMPO NEL FILE DOMTREEVICTIM.JSON");
+			try {
+				fs.writeFileSync("domTreeVictim.json", JSON.stringify(domTreeVictim, null, 2));
+				fs.writeFileSync("domTreeAttacker.json", JSON.stringify(domTreeAttacker, null, 2));
+				fs.writeFileSync("htmlOneLineAttacker.html", pageAttackerOneLine);
+				fs.writeFileSync("htmlOneLineVictim.html", pageVictimOneLine);
+			} catch (err) {
+				console.error(err);
+			}
+
+			//See if the attacker's dom-tree is equal to victim's dom-tree
+			if (JSON.stringify(domTreeVictim, null, 2) === JSON.stringify(domTreeAttacker, null, 2)) {
+				return "DOM trees are equal! The attack can be done!";
+			}
+			else {
+				return "Equal status code but the DOM tree are different, so the attack can't be done!"
+			}
 		}
+		
 	}
 }
