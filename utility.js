@@ -33,19 +33,19 @@ module.exports = {
                     return cookie.domain.startsWith("mondadoristore.it") || cookie.domain.startsWith(".mondadoristore.it");
                 }); 
                 break;
-            case 1: //Network session hijacking without HSTS
+            case 1: //Network session hijacking (no HSTS or partial HSTS adoption)
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return !cookie.secure;
+                    return !cookie.secure ||  (!cookie.secure && (cookie.domain.startsWith("mondadoristore.it") || cookie.domain.startsWith(".mondadoristore.it")));
                 });
                 break;
             case 2: //Related-domain session fixation
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return !cookie.domain.startsWith("__Host") /*&& (cookie.domain.startsWith("mondadoristore.it") || cookie.domain.startsWith(".mondadoristore.it"))*/;
+                    return !cookie.domain.startsWith("__Host");
                 });
                 break;
-            case 3: //Network session fixation without HSTS
+            case 3: //Network session fixation (no HSTS adopted and no __Host- or __Secure- prefix)
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return (!cookie.domain.startsWith("__Secure")) && (!cookie.domain.startsWith("__Host"));
+                    return !cookie.secure && ((!cookie.domain.startsWith("__Secure")) && (!cookie.domain.startsWith("__Host")));
                 });
                 break;
         }
