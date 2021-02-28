@@ -5,7 +5,37 @@ const path = require('path');
 const { request } = require('http');
 const readline = require('readline-sync');
 
+const parentDomain = [".aliexpress.com", "aliexpress.com"];
+
 module.exports = {
+    //TODO Function that make the first action like ask to user the url domain (if known) and the control if is a valid url
+    initialization: function() {
+        var knowUrl = readline.keyInYN("Did you know the url of site's domain? ");
+
+        if (knowUrl) {
+            //Receive in input the URL of the testing site domain (ex: https://www.mondadoristore.it, https://www.reddit.com)
+            const urlDomain = readline.question("The domain of the testing site is (if you don't know it press enter and don't write anything):  ");
+
+            //For the check of the url
+            //const expression = /^(http)(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$/m;
+            const expression = new RegExp('^(https?:\\/\\/)?'+ // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+            '(\\#[-a-z\\d_]*)?$','i');
+            //Test for see if the main url insert from user is a valid url form
+            if (!expression.test(urlDomain)) {
+                throw new Error('This is not an URL, please retry');
+            }
+            console.log("L'URL è STATO CONTROLLATO");
+
+            return urlDomain;
+        }
+        
+        return 0;
+    },
+
     //Function for filter cookies
     filterCookies: function(attackType) {
         console.log('Sono dentro la funzione filterCookies');
@@ -28,33 +58,29 @@ module.exports = {
         console.log("Cookies filtering...");
         switch (choosenIndex) {
             case 0: //Related-domain session hijacking
-                //TODO CERCARE UN MODO PER PARAMETRIZZARE IL DOMINIO DEI COOKIES
+                //TODO CERCARE UN MODO PER PARAMETRIZZARE IL DOMINIO DEI COOKIES E PER CAPIRE COME PARAMETRIZZARE I DOMINI PADRE
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return cookie.domain.startsWith("mondadoristore.it") || cookie.domain.startsWith(".mondadoristore.it");
+                    return cookie.domain.startsWith(parentDomain[0]) || cookie.domain.startsWith(parentDomain[1]);
                 }); 
                 break;
             case 1: //Network session hijacking (no HSTS or partial HSTS adoption)
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return !cookie.secure ||  (!cookie.secure && (cookie.domain.startsWith("mondadoristore.it") || cookie.domain.startsWith(".mondadoristore.it")));
+                    return !cookie.secure ||  (!cookie.secure && (cookie.domain.startsWith(parentDomain[0]) || cookie.domain.startsWith(parentDomain[1])));
                 });
                 break;
             case 2: //Related-domain session fixation
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return !cookie.domain.startsWith("__Host");
+                    return !cookie.domain.startsWith("__Host-");
                 });
                 break;
             case 3: //Network session fixation (no HSTS adopted and no __Host- or __Secure- prefix)
                 filteredCookies = allCookies.filter(function (cookie) {
-                    return !cookie.secure && ((!cookie.domain.startsWith("__Secure")) && (!cookie.domain.startsWith("__Host")));
+                    return !cookie.secure && ((!cookie.domain.startsWith("__Secure-")) && (!cookie.domain.startsWith("__Host-")));
                 });
                 break;
         }
         console.log("Cookies filtering terminated.");
-        //Debug for see which cookies exit from filtering
-        /*filteredCookies.forEach(cookie => {
-            console.log(cookie.name);
-        });
-        console.log(filteredCookies);*/
+        
         try {
             fs.writeFileSync("cookies-filtered.json", JSON.stringify(filteredCookies, null, 2));
         } catch (err) {
@@ -75,51 +101,47 @@ module.exports = {
 
     //Function for connecting the script to an existent instance of Google Chrome
     createInstance: async function(webSocketDebuggerUrl, urlDomain) {
+        console.log("urlDomain is: " + urlDomain);
         //Creating the browser instance and the page instance
         const browser = await puppeteer.connect({
             browserWSEndpoint: webSocketDebuggerUrl,
             headless: false,
-            slowMo: 300
+            slowMo: 400
         });
         const page = await browser.newPage();
 
         //Event handler for every request that starts
         page.on('request', async function(request) {
+            //Extract url from request
             const url = request.url();
-            if (url.indexOf(urlDomain) == 0 && request.resourceType() != "image" && request.resourceType() != "media" && request.resourceType() != "font" && request.resourceType() != "stylesheet") {
-                requestsCompletes[contReq] =  request;
-                reqMinimize[contReq] = "request url: " + url + " type: " + request.resourceType();
 
-                contReq = contReq + 1;
+            if (urlDomain == 0) {
+                if (request.resourceType() != "image" && request.resourceType() != "media" && request.resourceType() != "font" && request.resourceType() != "stylesheet" && request.resourceType() != "other") {
+                    requestsCompletes[contReq] =  request;
+                    reqMinimize[contReq] = "request url: " + url + " type: " + request.resourceType();
+    
+                    contReq = contReq + 1;
+                }
+            }
+            else {
+                if (url.indexOf(urlDomain) == 0 && request.resourceType() != "image" && request.resourceType() != "media" && request.resourceType() != "font" && request.resourceType() != "stylesheet" && request.resourceType() != "other") {
+                    requestsCompletes[contReq] =  request;
+                    reqMinimize[contReq] = "request url: " + url + " type: " + request.resourceType();
+    
+                    contReq = contReq + 1;
+                }
             }
         });
+
+        /*page.on('response', response => {
+            console.log("L'url della risposta ricevuta è: " + response.url() + " con status-code: " + response.status());
+        });*/
 
         return {"browser": browser, "page": page};
     },
 
     //Function for replicate the user interaction
     userAction: async function(page, navigationPromise, browser) {
-        await page.goto('https://www.mondadoristore.it/')
-  
-        await page.setViewport({ width: 1536, height: 731 })
-        
-        await page.waitForSelector('#big-header > #fixed-bar > #main-search #search-input')
-        await page.click('#big-header > #fixed-bar > #main-search #search-input')
-        
-        await page.type('#big-header > #fixed-bar > #main-search #search-input', 'mago merlino')
-        
-        await page.waitForSelector('#fixed-bar > #main-search > .searchBar > #adv-search-button > .image')
-        await page.click('#fixed-bar > #main-search > .searchBar > #adv-search-button > .image')
-        
-        await navigationPromise
-        
-        await page.waitForSelector('.info-data-product:nth-child(1) > .product-info > .product-info-wrapper > .title > .link')
-        await page.click('.info-data-product:nth-child(1) > .product-info > .product-info-wrapper > .title > .link')
-        
-        await navigationPromise
-        
-        await page.waitForSelector('.price > .right > .info-data-product > .columRightDetail > .add-to-favorites-new')
-        await page.click('.price > .right > .info-data-product > .columRightDetail > .add-to-favorites-new')
     },
 
     //TODO Function for do automatic login for both victim and attacker

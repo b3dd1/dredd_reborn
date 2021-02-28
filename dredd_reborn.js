@@ -4,11 +4,12 @@ const sleep = require('sleep');
 const readline = require('readline-sync');
 const { resaultAnalysis } = require('./sketch_copy.js');
 
-//Receive in input the URL of the testing site domain (ex: https://www.mondadoristore.it, https://www.reddit.com)
-const urlDomain = readline.question('The domain of the testing site is:  ');
+//Learn if user know the url domain of the testing site
+//const youKnow = readline.keyInYN("Do you know the testing site url domain? ");
+var knowUrl;
 
 //MAIN SCRIPT
-/*track.navigateVictim(urlDomain).then(function(cookies) {
+track.navigateVictim().then(function(cookies) {
     console.log('************************');
     cookies.forEach(cookie => {
         console.log(cookie.name)
@@ -18,14 +19,14 @@ const urlDomain = readline.question('The domain of the testing site is:  ');
     console.log('Login with the attacker account.');
     readline.question('Press enter when the login is done.');
     
-    track.navigateStriker(urlDomain).then(function() {
+    track.navigateStriker().then(function() {
         console.log("PROGRAM TERMINATED!");
         console.log(track.resaultAnalysis());
         process.exit(1);
     });
-});*/
+});
 
-track.navigateVictim(urlDomain).then(function(cookies) {
+/*track.navigateVictim(urlDomain).then(function(cookies) {
         console.log('************************');
         cookies.forEach(cookie => {
             console.log(cookie.name)
@@ -34,4 +35,4 @@ track.navigateVictim(urlDomain).then(function(cookies) {
         //resaultAnalysis();
         process.exit(1);
     }
-);
+);*/

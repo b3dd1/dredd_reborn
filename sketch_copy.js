@@ -1,6 +1,7 @@
 //Inside this file must be insert the puppeteer recorder sketch
 const puppeteer = require('puppeteer');
 const fs = require('fs');
+const sleep = require('sleep');
 const fse = require('fs-extra');
 const path = require('path');
 const {request} = require('http');
@@ -8,19 +9,20 @@ const readline = require('readline-sync');
 const utility = require('./utility');
 const {info} = require('console');
 const jsdom = require("jsdom");
+const { initialization } = require('./utility');
 
-//For the check of the url
-const expression = /^(http)(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$/gm;
+//Save the url domain (if known) and control if it is a domain
+const urlDomain = initialization();
 
 //This array contains all the possible type of attack
-const attackType = ['Related-domain session hijacking', 'Network session hijacking without HSTS', 'Related-domain session fixation', 'Network session fixation without HSTS'];
+const attackType = ['Session hijacking, related-domain attacker', 'Session hijacking, network attacker', 'Session fixation, related-domain attacker', 'Session fixation, network attacker'];
 
 //TODO Save the value webSocketDebuggerUrl in a sessionStorage and we take it or from a request to the specific url and obtain the .json with the
 //specific value or we ask this string at the begin of test and in this case the user can put this a single time, after that we take it from storage
 //the second method must be thinking about it (but it doesn't make me freak), I can try to resolve this problem with a cookie hidden and saved here
 //with a small time-to-live (for example one/two hours) and with a mechanism of try...catch for relevate if the webSocket is changed prematurely
 //For connect the script to an existing instance of Chrome
-const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/f0fb65a4-a955-4477-bbeb-208970a8c177';
+const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/fee6932b-2940-4a69-989a-e7257bace78d';
 
 //Two variables for memorize each status-code, one for victim and one for attacker
 var victimStatus;
@@ -30,18 +32,13 @@ var attackerStatus;
 var pageVictim;
 var pageAttacker;
 
-//Variables for memorize the dom-tree for both victim and attacker
-
+//Memorize the username of the victim, used for the resault analisys 
+const username = readline.question("Insert the victim's username: ");
 
 module.exports = {
 	//Function for simulate the behaviour of victim
-	navigateVictim: async function (urlDomain) {
+	navigateVictim: async function () {
 		console.log("INIZIO DELLA NAVIGATE VICTIM");
-		//Test for see if the main url insert from user is a valid url form
-		if (!expression.test(urlDomain)) {
-			throw new Error('This is not an URL, please retry');
-		}
-		console.log("L'URL è STATO CONTROLLATO");
 
 		console.log("INIZIO AD ISTANZIARE BROWSER E PAGE");
 		//Variable for memorize the instance of browser ad page for scrape the site and set the navigationPromise
@@ -49,12 +46,13 @@ module.exports = {
 		browser = browserPage.browser;
 		page = browserPage.page;
 		const navigationPromise = page.waitForNavigation({
-			timeout: 120000
+			timeout: 120000,
+			waitUntil: ['domcontentloaded', 'networkidle0']
 		});
 		console.log("HO ISTANZIATO BROWSER, PAGE E NAVIGATION PROMISE");
 
 
-		//For memorize the requests
+		//For memorize the requests completes and only url+type
 		requestsCompletes = [];
 		reqMinimize = [];
 		contReq = 0;
@@ -71,55 +69,46 @@ module.exports = {
 
 		console.log("INIZIO ESECUZIONE SCRIPT VITTIMA");
 
-		await page.goto('https://www.mondadoristore.it/')
+		await page.goto('https://it.aliexpress.com/')
 
-		await page.setViewport({
-			width: 1536,
-			height: 731
-		})
-
-		await page.waitForSelector('#big-header > #fixed-bar > #main-search #search-input')
-		await page.click('#big-header > #fixed-bar > #main-search #search-input')
-
-		await page.type('#big-header > #fixed-bar > #main-search #search-input', 'mago merlino')
-
-		await page.waitForSelector('#fixed-bar > #main-search > .searchBar > #adv-search-button > .image')
-		await page.click('#fixed-bar > #main-search > .searchBar > #adv-search-button > .image')
-
+		await page.setViewport({ width: 1536, height: 731 })
+		
+		await page.waitForSelector('body #home-firstscreen')
+		await page.click('body #home-firstscreen')
+		
+		await page.waitForSelector('#nav-global > .ng-item-wrap > .nav-wishlist > a > .text')
+		await page.click('#nav-global > .ng-item-wrap > .nav-wishlist > a > .text')
+		
 		await navigationPromise
-
-		await page.waitForSelector('.info-data-product:nth-child(1) > .product-info > .product-info-wrapper > .title > .link')
-		await page.click('.info-data-product:nth-child(1) > .product-info > .product-info-wrapper > .title > .link')
-
+		
+		await page.waitForSelector('.list > .product > .action > p > .remove')
+		await page.click('.list > .product > .action > p > .remove')
+		
 		await navigationPromise
-
-		await page.waitForSelector('.price > .right > .info-data-product > .columRightDetail > .add-to-favorites-new')
-		await page.click('.price > .right > .info-data-product > .columRightDetail > .add-to-favorites-new')
-		//utility.userAction(page, navigationPromise, browser);
-
-		console.log("FINE ESECUZIONE SCRIPT VITTIMA");
-
+		
 
 		//DO NOT DELETE THE FOLLOWING INSTRUCTION!!!
 		//IF YOU DO IT THE PROGRAM WILL HAVE A WRONG BEHAVIOUR!!!
-		//Saving the cookies about the site (1-st party cookies)
-		const cookies = await page.cookies();
 
 		//Try to print and save all the cookies saved
 		//console.log(await page._client.send('Network.getAllCookies'));
 		//const allCookiesInvolvedInteraction = await page._client.send('Network.getAllCookies');
 
+		console.log("FINE ESECUZIONE SCRIPT VITTIMA");
+
 		//Debug
 		console.log("STAMPO L'URL DELLA PAGINA: " + page.url());
+
+		console.log("I go to sleep for 5 seconds....");
+		sleep.sleep(5);
 
 		//Save the html code of the last page that it's used inside analysis function for extract the dom-tree
 		console.debug("STO SALVANDO L'HTML DELLA PAGINA DELLA VITTIMA");
 		pageVictim = await page.content();
 		console.log(pageVictim.length);
 
-		//This method introduce so much errors saving html code about the last page
-		//const data = await page.evaluate(() => document.querySelector('*').outerHTML);
-
+		//Saving cookies about the site (1-st party cookies)
+		const cookies = await page.cookies();
 
 		//debug
 		console.log("Risposte le cui richieste contenevano: " + urlDomain + " " + reqMinimize.length);
@@ -128,17 +117,20 @@ module.exports = {
 		//and debugging (request.json)
 		try {
 			fs.writeFileSync('pageVictim.html', pageVictim);
-			fs.writeFileSync('request.json', JSON.stringify(reqMinimize, null, 2));
+			fs.writeFileSync('requestVictim.json', JSON.stringify(reqMinimize, null, 2));
 			fs.writeFileSync('canvas-session.json', JSON.stringify(cookies, null, 2));
-			//fs.writeFileSync('allCookiesInvolved.json', JSON.stringify(allCookiesInvolvedInteraction, null, 2));
 		} catch (err) {
 			console.error(err);
 		};
 		console.log("Ho finito di creare il file con le richieste");
 
 		//Extract the status-code from last response and print it
+		try {
 		victimStatus = requestsCompletes[requestsCompletes.length - 1].response().status();
 		console.log("Last response victim status: " + victimStatus);
+		} catch (error) {
+			throw new Error("No request found, maybe the url domain is wrong, if you don't know it restart the program and doesn't set it!");
+		}
 
 		await page.close();
 
@@ -146,17 +138,19 @@ module.exports = {
 	},
 
 	//Function for simulate the behaviour of striker
-	navigateStriker: async function (urlDomain) {
+	navigateStriker: async function () {
 		//Variable for memorize the instance of browser ad page for scrape the site and set the navigationPromise
 		browserPage = await utility.createInstance(webSocketDebuggerUrl, urlDomain)
 		browser = browserPage.browser;
 		page = browserPage.page;
 		const navigationPromise = page.waitForNavigation({
-			timeout: 120000
+			timeout: 120000,
+			waitUntil: ['domcontentloaded', 'networkidle0']
 		});
 
 		//For memorize the requests
 		requestsCompletes = [];
+		reqMinimize = [];
 		contReq = 0;
 
 		//Filter the cookies and set them in the page
@@ -178,35 +172,34 @@ module.exports = {
 		//research.
 		//For example of track see example.js file
 
-		await page.goto('https://www.mondadoristore.it/')
+		await page.goto('https://it.aliexpress.com/')
 
-		await page.setViewport({
-			width: 1536,
-			height: 731
-		})
-
-		await page.waitForSelector('#big-header > #fixed-bar > #main-search #search-input')
-		await page.click('#big-header > #fixed-bar > #main-search #search-input')
-
-		await page.type('#big-header > #fixed-bar > #main-search #search-input', 'mago merlino')
-
-		await page.waitForSelector('#fixed-bar > #main-search > .searchBar > #adv-search-button > .image')
-		await page.click('#fixed-bar > #main-search > .searchBar > #adv-search-button > .image')
-
+		await page.setViewport({ width: 1536, height: 731 })
+		
+		await page.waitForSelector('body #home-firstscreen')
+		await page.click('body #home-firstscreen')
+		
+		await page.waitForSelector('#nav-global > .ng-item-wrap > .nav-wishlist > a > .text')
+		await page.click('#nav-global > .ng-item-wrap > .nav-wishlist > a > .text')
+		
 		await navigationPromise
-
-		await page.waitForSelector('.info-data-product:nth-child(1) > .product-info > .product-info-wrapper > .title > .link')
-		await page.click('.info-data-product:nth-child(1) > .product-info > .product-info-wrapper > .title > .link')
-
+		
+		await page.waitForSelector('.list > .product > .action > p > .remove')
+		await page.click('.list > .product > .action > p > .remove')
+		
 		await navigationPromise
-
-		await page.waitForSelector('.price > .right > .info-data-product > .columRightDetail > .add-to-favorites-new')
-		await page.click('.price > .right > .info-data-product > .columRightDetail > .add-to-favorites-new')
-
-		console.log("FINE ESECUZIONE SCRIPT ATTACCANTE");
+		
+		
 
 		//DO NOT DELETE THE FOLLOWING INSTRUCTION!!!
 		//IF YOU DO IT THE PROGRAM WILL HAVE A WRONG BEHAVIOUR!!!
+		console.log("FINE ESECUZIONE SCRIPT ATTACCANTE");
+
+		//Debug
+		console.log("STAMPO L'URL DELLA PAGINA: " + page.url());
+
+		console.log("I go to sleep for 5 seconds....");
+		sleep.sleep(5);
 
 		//Save the html code of the last page that it's used inside analysis function for extract the dom-tree
 		console.debug("STO SALVANDO L'HTML DELLA PAGINA DELL'ATTACCANTE");
@@ -215,6 +208,7 @@ module.exports = {
 
 		try {
 			fs.writeFileSync("pageAttacker.html", pageAttacker);
+			fs.writeFileSync('requestsAttacker.json', JSON.stringify(reqMinimize, null, 2));
 		} catch (err) {
 			console.error(err);
 		};
@@ -314,8 +308,8 @@ module.exports = {
 				console.error(err);
 			}
 
-			//See if the attacker's dom-tree is equal to victim's dom-tree
-			if (JSON.stringify(domTreeVictim, null, 2) === JSON.stringify(domTreeAttacker, null, 2)) {
+			//See if the attacker's dom-tree is equal to victim's dom-tree and if inside the html code of attacker I can find the username of victim, if yes the attack can be done
+			if (JSON.stringify(domTreeVictim, null, 2) === JSON.stringify(domTreeAttacker, null, 2) && (pageVictimOneLine.includes(username) && pageAttackerOneLine.includes(username))) {
 				return "DOM trees are equal! The attack can be done!";
 			}
 			else {
