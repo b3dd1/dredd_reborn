@@ -87,7 +87,7 @@ await navigationPromise
 /**************************************************************************************** */
 
 
-//Accedere a reddit, creare un post e pubblicarlo
+//Creare un post e pubblicarlo su reddit
 await page.goto('https://www.reddit.com/')
 
 await page.setViewport({ width: 1536, height: 731 })
@@ -95,21 +95,47 @@ await page.setViewport({ width: 1536, height: 731 })
 await page.waitForSelector('.\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa > .\_1OVBBWLtHoSPfGCRaPzpTf > .\_2jJNpBqXMbbyOiGCElTYxZ > .zgT5MfUrDMC54cpiCpZFu')
 await page.click('.\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa > .\_1OVBBWLtHoSPfGCRaPzpTf > .\_2jJNpBqXMbbyOiGCElTYxZ > .zgT5MfUrDMC54cpiCpZFu')
 
-await page.waitForSelector('.\_1OVBBWLtHoSPfGCRaPzpTf > .HOFZo2X7Fr6JVBztpsByj > .XZK-LTFT5CgGo9MvPQQsy > .\_2sfaZWDVT8JLAt2J9p4IzV > .\_3cWzf-usAKfGV1Ay7h2zM_')
-await page.click('.\_1OVBBWLtHoSPfGCRaPzpTf > .HOFZo2X7Fr6JVBztpsByj > .XZK-LTFT5CgGo9MvPQQsy > .\_2sfaZWDVT8JLAt2J9p4IzV > .\_3cWzf-usAKfGV1Ay7h2zM_')
-
-await page.waitForSelector('.XZK-LTFT5CgGo9MvPQQsy > .\_2sfaZWDVT8JLAt2J9p4IzV > .\_3cWzf-usAKfGV1Ay7h2zM_ > div > .XHbKeEqnW58ib9mTN6jnS')
-await page.click('.XZK-LTFT5CgGo9MvPQQsy > .\_2sfaZWDVT8JLAt2J9p4IzV > .\_3cWzf-usAKfGV1Ay7h2zM_ > div > .XHbKeEqnW58ib9mTN6jnS')
+await page.waitForSelector('.XZK-LTFT5CgGo9MvPQQsy > .\_2sfaZWDVT8JLAt2J9p4IzV > .\_3cWzf-usAKfGV1Ay7h2zM_ > .anPJr_ybRailY8NbAunl2 > .\_1MHSX9NVr4C2QxH2dMcg4M')
+await page.click('.XZK-LTFT5CgGo9MvPQQsy > .\_2sfaZWDVT8JLAt2J9p4IzV > .\_3cWzf-usAKfGV1Ay7h2zM_ > .anPJr_ybRailY8NbAunl2 > .\_1MHSX9NVr4C2QxH2dMcg4M')
 
 await page.type('.XZK-LTFT5CgGo9MvPQQsy > .\_2sfaZWDVT8JLAt2J9p4IzV > .\_3cWzf-usAKfGV1Ay7h2zM_ > .anPJr_ybRailY8NbAunl2 > .\_1MHSX9NVr4C2QxH2dMcg4M', 'u/Bob3121')
 
 await page.waitForSelector('.\_3w_665DK_NH7yIsRMuZkqB > .\_1zq6UabIEJJ-z9grsiCJY7 > .\_3zkbHfhLbXp21FwGj_kNZV > .\_2wyvfFW3oNcCs5GVkmcJ8z > .PqYQ3WC15KaceZuKcFI02')
 await page.click('.\_3w_665DK_NH7yIsRMuZkqB > .\_1zq6UabIEJJ-z9grsiCJY7 > .\_3zkbHfhLbXp21FwGj_kNZV > .\_2wyvfFW3oNcCs5GVkmcJ8z > .PqYQ3WC15KaceZuKcFI02')
 
-await page.type('.\_3w_665DK_NH7yIsRMuZkqB > .\_1zq6UabIEJJ-z9grsiCJY7 > .\_3zkbHfhLbXp21FwGj_kNZV > .\_2wyvfFW3oNcCs5GVkmcJ8z > .PqYQ3WC15KaceZuKcFI02', 'Absolutly yes')
+await page.type('.\_3w_665DK_NH7yIsRMuZkqB > .\_1zq6UabIEJJ-z9grsiCJY7 > .\_3zkbHfhLbXp21FwGj_kNZV > .\_2wyvfFW3oNcCs5GVkmcJ8z > .PqYQ3WC15KaceZuKcFI02', 'Avada cadabra')
 
 await page.waitForSelector('.XZK-LTFT5CgGo9MvPQQsy > .\_2DHDj0dbS1TkKD3fMqSbHy > .XZK-LTFT5CgGo9MvPQQsy > .\_1T0P_YQg7fOYLCRoKl_xxO > .\_18Bo5Wuo3tMV-RDB8-kh8Z')
 await page.click('.XZK-LTFT5CgGo9MvPQQsy > .\_2DHDj0dbS1TkKD3fMqSbHy > .XZK-LTFT5CgGo9MvPQQsy > .\_1T0P_YQg7fOYLCRoKl_xxO > .\_18Bo5Wuo3tMV-RDB8-kh8Z')
+
+/*Reddit, cambiare il nome utente */
+await page.goto('https://www.reddit.com/')
+
+await page.setViewport({ width: 1536, height: 731 })
+
+await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
+await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
+
+await page.waitForSelector('#email-verification-tooltip-id #email-collection-tooltip-id')
+await page.click('#email-verification-tooltip-id #email-collection-tooltip-id')
+
+await page.waitForSelector('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
+await page.click('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
+
+await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
+await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
+
+await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
+await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
+
+await page.type('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00', 'gigino')
+
+await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
+await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
+
+await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
+await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
+
 
 
 

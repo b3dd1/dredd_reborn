@@ -14,7 +14,7 @@ module.exports = {
 
         if (knowUrl) {
             //Receive in input the URL of the testing site domain (ex: https://www.mondadoristore.it, https://www.reddit.com)
-            const urlDomain = readline.question("The domain of the testing site is (if you don't know it press enter and don't write anything):  ");
+            const urlDomain = readline.question("The domain of the testing site is:  ");
 
             //For the check of the url
             //const expression = /^(http)(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$/m;

@@ -1,0 +1,13 @@
+[
+  "request url: https://www.reddit.com/ type: document",
+  "request url: https://www.reddit.com/account/sso/one_tap/?experiment_d2x_2020ify_buttons=enabled&d2x_google_onetap=onetap_auto type: document",
+  "request url: https://www.reddit.com/counters/client-screenview type: xhr",
+  "request url: https://www.reddit.com/ type: xhr",
+  "request url: https://www.reddit.com/timings/rum type: xhr",
+  "request url: https://www.reddit.com/ type: xhr",
+  "request url: https://www.reddit.com/ type: xhr",
+  "request url: https://www.reddit.com/ type: xhr",
+  "request url: https://www.reddit.com/ type: xhr",
+  "request url: https://www.reddit.com/ type: xhr",
+  "request url: https://www.reddit.com/ type: xhr"
+]

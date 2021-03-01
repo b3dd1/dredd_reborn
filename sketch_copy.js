@@ -22,7 +22,7 @@ const attackType = ['Session hijacking, related-domain attacker', 'Session hijac
 //the second method must be thinking about it (but it doesn't make me freak), I can try to resolve this problem with a cookie hidden and saved here
 //with a small time-to-live (for example one/two hours) and with a mechanism of try...catch for relevate if the webSocket is changed prematurely
 //For connect the script to an existing instance of Chrome
-const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/fee6932b-2940-4a69-989a-e7257bace78d';
+const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/198f115e-a39c-4e4a-a222-1397144c2b17';
 
 //Two variables for memorize each status-code, one for victim and one for attacker
 var victimStatus;
@@ -67,24 +67,37 @@ module.exports = {
 		//research.
 		//For example of track see example.js file
 
-		console.log("INIZIO ESECUZIONE SCRIPT VITTIMA");
+		console.log("INIZIO ESECUZIONE SCRIPT VITTIMA, PLEASE WAIT....");
 
-		await page.goto('https://it.aliexpress.com/')
+		await page.goto('https://www.reddit.com/')
 
 		await page.setViewport({ width: 1536, height: 731 })
 		
-		await page.waitForSelector('body #home-firstscreen')
-		await page.click('body #home-firstscreen')
+		await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
+		await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
 		
-		await page.waitForSelector('#nav-global > .ng-item-wrap > .nav-wishlist > a > .text')
-		await page.click('#nav-global > .ng-item-wrap > .nav-wishlist > a > .text')
+		await page.waitForSelector('#email-verification-tooltip-id #email-collection-tooltip-id')
+		await page.click('#email-verification-tooltip-id #email-collection-tooltip-id')
 		
-		await navigationPromise
+		await page.waitForSelector('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
+		await page.click('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
 		
-		await page.waitForSelector('.list > .product > .action > p > .remove')
-		await page.click('.list > .product > .action > p > .remove')
+		await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
+		await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
 		
-		await navigationPromise
+		await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
+		await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
+		
+		await page.type('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00', 'gigino')
+		
+		await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
+		await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
+		
+		await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
+		await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
+		
+		
+		
 		
 
 		//DO NOT DELETE THE FOLLOWING INSTRUCTION!!!
@@ -99,11 +112,13 @@ module.exports = {
 		//Debug
 		console.log("STAMPO L'URL DELLA PAGINA: " + page.url());
 
-		console.log("I go to sleep for 5 seconds....");
-		sleep.sleep(5);
+		console.log("I go to sleep for 7 seconds....");
+		sleep.sleep(7);
 
 		//Save the html code of the last page that it's used inside analysis function for extract the dom-tree
 		console.debug("STO SALVANDO L'HTML DELLA PAGINA DELLA VITTIMA");
+		await page.screenshot({path: 'victim-screenshot.png'});
+		sleep.sleep(2);
 		pageVictim = await page.content();
 		console.log(pageVictim.length);
 
@@ -160,7 +175,7 @@ module.exports = {
 			await page.setCookie(newCookies[i]);
 		}
 
-		console.log("ESECUZIONE SCRIPT ATTACCANTE");
+		console.log("ESECUZIONE SCRIPT ATTACCANTE, PLEASE WAIT....");
 
 		//RULES FOR CREATE AN ACCOURATE SKETCH USING HEADLESS RECORDER (USE WITH CHROMIUM)
 		//1)Insert here the headless recorder sscript from the first operation (await page.goto('...'))
@@ -172,24 +187,44 @@ module.exports = {
 		//research.
 		//For example of track see example.js file
 
-		await page.goto('https://it.aliexpress.com/')
+		try {
+			await page.goto('https://www.reddit.com/')
 
-		await page.setViewport({ width: 1536, height: 731 })
-		
-		await page.waitForSelector('body #home-firstscreen')
-		await page.click('body #home-firstscreen')
-		
-		await page.waitForSelector('#nav-global > .ng-item-wrap > .nav-wishlist > a > .text')
-		await page.click('#nav-global > .ng-item-wrap > .nav-wishlist > a > .text')
-		
-		await navigationPromise
-		
-		await page.waitForSelector('.list > .product > .action > p > .remove')
-		await page.click('.list > .product > .action > p > .remove')
-		
-		await navigationPromise
-		
-		
+			await page.setViewport({ width: 1536, height: 731 })
+			
+			await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
+			await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
+			
+			await page.waitForSelector('#email-verification-tooltip-id #email-collection-tooltip-id')
+			await page.click('#email-verification-tooltip-id #email-collection-tooltip-id')
+			
+			await page.waitForSelector('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
+			await page.click('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
+			
+			await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
+			await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
+			
+			await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
+			await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
+			
+			await page.type('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00', 'gigino')
+			
+			await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
+			await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
+			
+			await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
+			await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
+			
+			
+
+		} catch (error) {
+			console.log(error);
+			await page.screenshot({path: 'attacker-screenshot.png'});
+			sleep.sleep(2);
+			pageAttacker = await page.content();
+			console.log(this.resaultAnalysis());
+			process.exit(1);
+		}
 
 		//DO NOT DELETE THE FOLLOWING INSTRUCTION!!!
 		//IF YOU DO IT THE PROGRAM WILL HAVE A WRONG BEHAVIOUR!!!
@@ -198,11 +233,13 @@ module.exports = {
 		//Debug
 		console.log("STAMPO L'URL DELLA PAGINA: " + page.url());
 
-		console.log("I go to sleep for 5 seconds....");
-		sleep.sleep(5);
+		console.log("I go to sleep for 7 seconds....");
+		sleep.sleep(7);
 
 		//Save the html code of the last page that it's used inside analysis function for extract the dom-tree
 		console.debug("STO SALVANDO L'HTML DELLA PAGINA DELL'ATTACCANTE");
+		await page.screenshot({path: 'attacker-screenshot.png'});
+		sleep.sleep(2);
 		pageAttacker = await page.content();
 		console.log(pageAttacker.length);
 
@@ -249,18 +286,18 @@ module.exports = {
 
 	//Function for automate control about the test result
 	resaultAnalysis: function () {
-		if (victimStatus !== attackerStatus) {
-			return "The site isn't subject to this type of attack!";
-		} else {
+
+		//If the attacker hasn't no status-code meaning that attacker's script has rised an error and probably the attack can't be done
+		if (victimStatus === attackerStatus || attackerStatus === undefined) {
 			//Equal status-code, analize html code of attacker and victim page, if the dom-tree is equal the site
 			//is subject to the attack proved, otherwise the attack can't be done
 			
-			console.log("RICEVUTI DUE STATUS CODE UGUALI");
+			console.log("RICEVUTI DUE STATUS CODE UGUALI O è STATO GENERATO UN ERRORE NELLO SCRIPT DELL'ATTACCANTE");
 
 			//This two actions are necessary for delete useless tabulations and blank spaces for have all the html in one line
 			pageVictimOneLine = pageVictim.replace(/(\r\n|\n+|\r|\t+|\s\s+)/gm, "");
 			pageAttackerOneLine = pageAttacker.replace(/(\r\n|\n+|\r|\t+|\s\s+)/gm, "");
-			console.log("RIMOSSI SPAZIE E TEBULAZIONI");
+			//console.log("RIMOSSI SPAZIE E TEBULAZIONI");
 
 			//Parse the html for make it a dom
 			var domVictim = new jsdom.JSDOM(pageVictim);
@@ -298,23 +335,30 @@ module.exports = {
 			domTreeAttacker = domTree(rootNodeAttacker);
 			
 			//Print the file that contains two dom trees and two HTML in one line
-			console.log("DOM-TREE CREATO, LO STAMPO NEL FILE DOMTREEVICTIM.JSON");
+			console.log("DOM-TREE CREATI, LI STAMPO NEL FILE DOMTREEVICTIM.JSON E DOMTREEATTACKER.JSON");
 			try {
 				fs.writeFileSync("domTreeVictim.json", JSON.stringify(domTreeVictim, null, 2));
 				fs.writeFileSync("domTreeAttacker.json", JSON.stringify(domTreeAttacker, null, 2));
-				fs.writeFileSync("htmlOneLineAttacker.html", pageAttackerOneLine);
-				fs.writeFileSync("htmlOneLineVictim.html", pageVictimOneLine);
+				//fs.writeFileSync("htmlOneLineAttacker.html", pageAttackerOneLine);
+				//fs.writeFileSync("htmlOneLineVictim.html", pageVictimOneLine);
 			} catch (err) {
 				console.error(err);
 			}
 
+			//This condition is necessary when the attacker try to execut the script and is raised an error
+			if (attackerStatus === undefined && (JSON.stringify(domTreeVictim, null, 2) === JSON.stringify(domTreeAttacker, null, 2))) {
+				return "DOM trees are not equal, attack can't be done!";
+			}
+
 			//See if the attacker's dom-tree is equal to victim's dom-tree and if inside the html code of attacker I can find the username of victim, if yes the attack can be done
-			if (JSON.stringify(domTreeVictim, null, 2) === JSON.stringify(domTreeAttacker, null, 2) && (pageVictimOneLine.includes(username) && pageAttackerOneLine.includes(username))) {
+			if (JSON.stringify(domTreeVictim, null, 2) === JSON.stringify(domTreeAttacker, null, 2) && (pageVictim.includes(username) && pageAttacker.includes(username))) {
 				return "DOM trees are equal! The attack can be done!";
 			}
 			else {
 				return "Equal status code but the DOM tree are different, so the attack can't be done!"
 			}
+		} else {
+			return "Attacker's status-code isn't equal to victim's status-code, so this site isn't subject to this type of attack!";
 		}
 		
 	}
