@@ -138,17 +138,5 @@ module.exports = {
         });*/
 
         return {"browser": browser, "page": page};
-    },
-
-    //Function for replicate the user interaction
-    userAction: async function(page, navigationPromise, browser) {
-    },
-
-    //TODO Function for do automatic login for both victim and attacker
-    authentication: function() {
-        username = readline.question('Username: ', {hideEchoBack: false});
-        password = readline.question('Password: ', {hideEchoBack: true});
-
-        return {"username": username, "password": password};
     }
 }

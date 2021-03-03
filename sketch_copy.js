@@ -9,6 +9,7 @@ const readline = require('readline-sync');
 const utility = require('./utility');
 const {info} = require('console');
 const jsdom = require("jsdom");
+const track = require("./track.js");
 const { initialization } = require('./utility');
 
 //Save the url domain (if known) and control if it is a domain
@@ -22,7 +23,7 @@ const attackType = ['Session hijacking, related-domain attacker', 'Session hijac
 //the second method must be thinking about it (but it doesn't make me freak), I can try to resolve this problem with a cookie hidden and saved here
 //with a small time-to-live (for example one/two hours) and with a mechanism of try...catch for relevate if the webSocket is changed prematurely
 //For connect the script to an existing instance of Chrome
-const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/198f115e-a39c-4e4a-a222-1397144c2b17';
+const webSocketDebuggerUrl = 'ws://127.0.0.1:9222/devtools/browser/6ba946d4-8d59-4a55-968a-62758016541f';
 
 //Two variables for memorize each status-code, one for victim and one for attacker
 var victimStatus;
@@ -32,12 +33,17 @@ var attackerStatus;
 var pageVictim;
 var pageAttacker;
 
+//For indicate if the script is inside navigateVictim (=0) ore navigateStriker (=1)
+var identity;
+
 //Memorize the username of the victim, used for the resault analisys 
 const username = readline.question("Insert the victim's username: ");
 
 module.exports = {
 	//Function for simulate the behaviour of victim
 	navigateVictim: async function () {
+		indentity = 0;
+
 		console.log("INIZIO DELLA NAVIGATE VICTIM");
 
 		console.log("INIZIO AD ISTANZIARE BROWSER E PAGE");
@@ -70,35 +76,31 @@ module.exports = {
 		console.log("INIZIO ESECUZIONE SCRIPT VITTIMA, PLEASE WAIT....");
 
 		await page.goto('https://www.reddit.com/')
-
+	
 		await page.setViewport({ width: 1536, height: 731 })
-		
+
 		await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
 		await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
-		
+
 		await page.waitForSelector('#email-verification-tooltip-id #email-collection-tooltip-id')
 		await page.click('#email-verification-tooltip-id #email-collection-tooltip-id')
-		
+
 		await page.waitForSelector('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
 		await page.click('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
-		
+
 		await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
 		await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
-		
+
 		await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
 		await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
-		
+
 		await page.type('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00', 'gigino')
-		
+
 		await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
 		await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
-		
+
 		await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
 		await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
-		
-		
-		
-		
 
 		//DO NOT DELETE THE FOLLOWING INSTRUCTION!!!
 		//IF YOU DO IT THE PROGRAM WILL HAVE A WRONG BEHAVIOUR!!!
@@ -154,6 +156,8 @@ module.exports = {
 
 	//Function for simulate the behaviour of striker
 	navigateStriker: async function () {
+		identity = 1;
+
 		//Variable for memorize the instance of browser ad page for scrape the site and set the navigationPromise
 		browserPage = await utility.createInstance(webSocketDebuggerUrl, urlDomain)
 		browser = browserPage.browser;
@@ -187,44 +191,32 @@ module.exports = {
 		//research.
 		//For example of track see example.js file
 
-		try {
-			await page.goto('https://www.reddit.com/')
+		await page.goto('https://www.reddit.com/')
+	
+		await page.setViewport({ width: 1536, height: 731 })
 
-			await page.setViewport({ width: 1536, height: 731 })
-			
-			await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
-			await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
-			
-			await page.waitForSelector('#email-verification-tooltip-id #email-collection-tooltip-id')
-			await page.click('#email-verification-tooltip-id #email-collection-tooltip-id')
-			
-			await page.waitForSelector('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
-			await page.click('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
-			
-			await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
-			await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
-			
-			await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
-			await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
-			
-			await page.type('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00', 'gigino')
-			
-			await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
-			await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
-			
-			await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
-			await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
-			
-			
+		await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
+		await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > div > .qYj03fU5CXf5t2Fc5iSvg > .\_3ozFtOe6WpJEMUtxDOIvtU > .\_1vyLCp-v-tE5QvZovwrASa')
 
-		} catch (error) {
-			console.log(error);
-			await page.screenshot({path: 'attacker-screenshot.png'});
-			sleep.sleep(2);
-			pageAttacker = await page.content();
-			console.log(this.resaultAnalysis());
-			process.exit(1);
-		}
+		await page.waitForSelector('#email-verification-tooltip-id #email-collection-tooltip-id')
+		await page.click('#email-verification-tooltip-id #email-collection-tooltip-id')
+
+		await page.waitForSelector('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
+		await page.click('body > div > .\_2uYY-KeuYHKiwl-9aF0UiL > .\_1YWXCINvcuU7nk0ED-bta8:nth-child(4) > .vzhy90YD0qH7ZDJi7xMGw')
+
+		await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
+		await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_3FtOlkq31vuUJkzTkq4--W > .M7VDHU4AdgCc6tHaZ-UUy > .\_1PoD47oSHsBQ37RfRPY-G-:nth-child(2)')
+
+		await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
+		await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00')
+
+		await page.type('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_3CWuMoFPzdbJCxYJVmEw00', 'gigino')
+
+		await page.waitForSelector('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
+		await page.click('.\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_2f63as5b5FASHMqGd5P1o0 > .\_1oREjd5ToMFah-VfX5Zt1z > .\_2gchCc4pmLk-CHEErYmFaP')
+
+		await page.waitForSelector('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
+		await page.click('.\_1nxEQl5D2Bx2jxDILRHemb > .aq7Z-V1l4XpWUOsbbPQed > .\_1OrNGmpfcSuSebbZM5vYq4 > .\_3FVpvZ7OLbS_68QzaxplxT > .\_3IMnOO5YHH-N0YB3yfV2Ha')
 
 		//DO NOT DELETE THE FOLLOWING INSTRUCTION!!!
 		//IF YOU DO IT THE PROGRAM WILL HAVE A WRONG BEHAVIOUR!!!
@@ -258,31 +250,6 @@ module.exports = {
 
 		return 1;
 	},
-
-	/*    executeNavigation: async function(page, navigationPromise) {
-			//Function in which the user put the script
-			await page.goto('https://www.mondadoristore.it/')
-		
-			await page.setViewport({ width: 1536, height: 731 })
-			
-			await page.waitForSelector('#big-header > #fixed-bar > #main-search #search-input')
-			await page.click('#big-header > #fixed-bar > #main-search #search-input')
-			
-			await page.type('#big-header > #fixed-bar > #main-search #search-input', 'mago merlino')
-			
-			await page.waitForSelector('#fixed-bar > #main-search > .searchBar > #adv-search-button > .image')
-			await page.click('#fixed-bar > #main-search > .searchBar > #adv-search-button > .image')
-			
-			await navigationPromise
-			
-			await page.waitForSelector('.info-data-product:nth-child(1) > .product-info > .product-info-wrapper > .title > .link')
-			await page.click('.info-data-product:nth-child(1) > .product-info > .product-info-wrapper > .title > .link')
-			
-			await navigationPromise
-			
-			await page.waitForSelector('.price > .right > .info-data-product > .columRightDetail > .add-to-favorites-new')
-			await page.click('.price > .right > .info-data-product > .columRightDetail > .add-to-favorites-new')
-		},*/
 
 	//Function for automate control about the test result
 	resaultAnalysis: function () {
